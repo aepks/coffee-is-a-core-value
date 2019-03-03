@@ -56,6 +56,8 @@ Raspberry Pi models will be used for the parts of the machine. The responsibilit
 
 The program will be mostly written in Python 3. This makes it easy to use mySQL, as well as connecting to physical buttons using GPIO.
 
+
+
 **mySQL Table Design:**
 
 There will be n+1 tables, where n refers to the number of users of the program.
@@ -64,10 +66,11 @@ The tables will be laid out as follows:
 
 'main' table:
 
-| rfid_key | user_name | balance |
-| -------- | --------- | ------- |
-| 113815   | jschmitz2 | 35.25   |
-| 116381   | jschmoe38 | 2.31    |
+| rfid_key | user_name | balance | account_type | special_price |
+| -------- | --------- | ------- | ------------ | ------------- |
+| 113815   | jschmitz2 | 35.25   | admin        | 0.50          |
+| 116381   | jschmoe38 | 2.31    | manager      | 0.50          |
+| 114189   | kschmitz2 | -0.05   | user         | None          |
 
 'user' table (for each individual user):
 *note: this table will be named after their user ID*
