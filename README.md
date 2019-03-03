@@ -29,7 +29,7 @@ Justin Schmitz, Daniel Keats (Jimmy)
 
 10. Have an automated email system in place to let users know when their balance is starting to run low (5$, <1$).
 
-11. Account system - Allow for three levels of accounts.
+11. Account system - Allow for four levels of accounts.
   1. "user": Able to access all standard functionality.
   2. "manager": Able to modify account balances, adjust prices, and produce data exports.
   3. "admin": Full access, including updating the program, access to the databases, and doing basically whatever they want.   
