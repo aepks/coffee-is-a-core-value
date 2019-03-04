@@ -163,4 +163,43 @@ The tables will be laid out as follows:
 | --------- | -------- | ---- | ------ | -------- | ------- |
 | *format*  | purchase | soda | 0.50   | 35.75    | 35.25   |
 
-#### Program Setup, Layout
+### Program functions:
+
+* Scan a user's ID card.
+* Check the user's ID card against the database, and see if it is present.
+* If it is present, set the active account to that user.
+* If it is not present, generate a new account for that user, then set the active account to that user.
+* Add money - allow user to add money, add it to their account.
+* Purchase item - purchasing an item removes money from their account, making sure the balance is there, and executes whatever machine.
+* Refund balance - returns the user's money from their account based on what's in in the machine.
+* Generate receipt - generates a receipt for the user, and sends it to the email on file.
+* Update information - updates user information from a Google form.
+* Manager control - manually update customer information and balances.
+* Manager notifications: Inform the managers when change is running low.
+
+### Program Layout:
+
+**RFID-scanning functions**:
+* Scan a user's ID card.
+
+**Account-related functions**:
+
+* Check the user's ID card against the database, and see if it is present.
+* If it is present, set the active account to that user.
+* If it is not present, generate a new account for that user, then set the active account to that user.
+
+**Account-balance functions**:
+
+* Add money - allow user to add money, add it to their account.
+* Purchase item - purchasing an item removes money from their account, making sure the balance is there, and executes whatever machine.
+* Refund balance - returns the user's money from their account based on what's in in the machine.
+
+**Manager functions**:
+* Manager control - manually update customer information and balances.
+* Manager notifications: Inform the managers when change is running low.
+
+**Google form functionality**:
+* Update information - updates user information from a Google form.
+
+**Receipt functions**
+* Generate receipt - generates a receipt for the user, and sends it to the email on file.
