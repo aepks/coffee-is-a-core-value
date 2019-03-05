@@ -135,18 +135,19 @@ There will be n+3 tables, where n refers to the number of users of the program.
 
 The tables will be laid out as follows:
 
-'prices' table:
+'parameters' table:
 
 | item   | price |
 | ------ | ----- |
 | coffee | 1.00  |
 | soda   | 0.50  |
+| min_bal | 0.00  |
 
 'machine_information' table:
 
-| timestamp | balance | 100 | 50 | 20 | 10 | 5 | 1 | .25 | .10 | .5 |
-| --------- | ------- | --- | -- | -- | -- | - | - | --- | --- | -- |
-| *format*  | 69.40   | 0   | 0  | 0  | 10 | 3 | 7 | 10  | 5   | 3  |
+| timestamp | balance | soda_sold | coffee_sold |
+| --------- | ------- | --------- | ----------- |
+| *format*  | 69.40   | 31        | 52          | 
 
 'users' table:
 
