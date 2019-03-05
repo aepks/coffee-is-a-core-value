@@ -18,7 +18,7 @@ Justin Schmitz, Daniel Keats (Jimmy)
 
 5. Automatic account registration - such that without having to sign up online or in advance, IIT students will be able to scan their ID for the first time and have an account generate, including pulling their hawk email address.
 
-6. Enforcement of payment - ensure that the system cannot easily be 'broken' so as to allow a person who did not pay to receive product.
+6. Enforcement of payment - ensure that the system cannot easily be 'broken' so as to allow a person who did not pay to receive product. This would involve a mechanical shield being used on the espresso machine.
 
 7. Encryption - The service should be at least a little secure, with encryption on the administrator passwords.
 
@@ -182,7 +182,7 @@ The tables will be laid out as follows:
 
 * Add money - allow manager to add money to user account.
 * Purchase item - purchasing an item removes money from their account, making sure the balance is there, and executes whatever machine.
-* Refund balance - returns the user's money from their account, through manager. 
+* Refund balance - returns the user's money from their account, through manager.
 
 **Manager functions**:
 * Manager control - manually update customer information and balances.
