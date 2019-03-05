@@ -12,7 +12,6 @@ Justin Schmitz, Daniel Keats (Jimmy)
   2. Purchasing items from the machines.
   3. Refunding account balance.
 
-
 3. Allow for account management - such that if somebody claims they put money in and didn't get it, or some other strange thing happened, this needs to be fixable by an administrator. This should be easy to do, such that it doesn't need to be done by the guy who wrote the thing, so that it is sustainable into the future.
 
 4. Allow for guests to purchase items - guests need a way to put money into the soda machine and purchase both soda and coffee products.
@@ -47,41 +46,26 @@ Task 1: New Registration.
 
 4. Display current balance, probably 0.00, along with their user name or RFID key. Prompt the user to input money.
 
-Task 2: Adding money to a user account.
-
-1. Person scans ID.
-2. The main menu will appear. Prompt the user with their current balance, and the available menu options. "Welcome, [username]. Your current balance is [balance]. To add money to your account, please feed it in now.".
-3. After this, the user will feed in money. It then should be read, and then input into the program.
-
-Task 3: Refund from a user account.
+Task 2: Purchasing a coffee.
 
 1. Person scans ID, or is on guest account.
-2. Person presses 'refund' button.
-3. Check if there is enough money in the machine to refund the balance.
-4. If not, give the closest number that can be achieved.
-5. Ask the user to confirm the refund, prompting them to press yes or no.
-6. If yes, return the money. Then, if yes or no, return to the main menu.
-
-Task 4: Purchasing a coffee.
-
-1. Person scans ID, or is on guest account.
-2. The main menu will appear. Prompt the user with their current balance, and the available menu options. "Welcome, [username]. Your current balance is []. To add more, please use the soda machine."
+2. The main menu will appear. Prompt the user with their current balance, and the available menu options. "Welcome, [username]. Your current balance is []."
 3. The user will then press the 'purchase item' button on the coffee machine terminal.
 1. The user's account will be checked, to ensure they have the requisite balance.
 2. The user's account will then be deducted the given balance.
 3. The plastic shroud covering the touchscreen on the coffee machine will then be lifted, allowing the user to select a drink option.
 4. After 30 seconds (arbitrary number), the shroud will then move back into place.
 
-Task 5. Purchasing a soda.
+Task 3. Purchasing a soda.
 
 1. Person scans ID, or is on guest account.
-2. The main menu will appear. Prompt the user with their current balance, and the available menu options. "Welcome, [username]. Your current balance is [balance]. To add money to your account, please feed it in now.".
+2. The main menu will appear. Prompt the user with their current balance, and the available menu options. "Welcome, [username]. Your current balance is []."
 3. The user will then press the 'purchase item' button.
 4. The user's account will be checked, to ensure they have the requisite balance.
 5. The user's account will then be deducted the given balance.
 6. [Access control method for soda machine here.]
 
-Task 6. Generating a receipt.
+Task 4. Generating a receipt.
 
 1. Person scans ID, or is on guest account.
 2. Depending on machine, user will be welcomed with 'Welcome' state.
@@ -93,6 +77,13 @@ Task 6. Generating a receipt.
   1. Receipt will be generated, and sent to their email.
   2. Display "Sent a receipt to [email]. To change this address, please fill out [google form]".
 
+Task 5. Adding money to an account.
+
+1. A locked box with a slot will be next to the machine, along with envelopes.
+2. The user will write their name on the envelope, and include money.
+3. A manager will add it to their account.
+
+As a stretch goal, automating task 5 using the money input on the soda machine.
 
 Managerial tasks:
 1. Informing the system managers and administrators when change is running low.
@@ -110,8 +101,6 @@ Raspberry Pi models will be used for the parts of the machine. The responsibilit
 1. Soda Machine (Master):
    * Host the mySQL server and the web portal.
    * Have an RFID reader for a user to scan into their account.
-   * Allow for the input of money into a user account.
-   * Allow for the return of money from a user account. (Refunds)
    * Have a 'receipt' button to send the user their receipt.
    * Have a 'logoff' button, for when the user is done with their session.
    * Have a button for the user to purchase a soda, and regulate this with the account system.
@@ -147,7 +136,7 @@ The tables will be laid out as follows:
 
 | timestamp | balance | soda_sold | coffee_sold |
 | --------- | ------- | --------- | ----------- |
-| *format*  | 69.40   | 31        | 52          | 
+| *format*  | 69.40   | 31        | 52          |
 
 'users' table:
 
@@ -172,7 +161,7 @@ The tables will be laid out as follows:
 * If it is not present, generate a new account for that user, then set the active account to that user.
 * Add money - allow user to add money, add it to their account.
 * Purchase item - purchasing an item removes money from their account, making sure the balance is there, and executes whatever machine.
-* Refund balance - returns the user's money from their account based on what's in in the machine.
+* Refund balance - returns the user's money from their account.
 * Generate receipt - generates a receipt for the user, and sends it to the email on file.
 * Update information - updates user information from a Google form.
 * Manager control - manually update customer information and balances.
@@ -191,9 +180,9 @@ The tables will be laid out as follows:
 
 **Account-balance functions**:
 
-* Add money - allow user to add money, add it to their account.
+* Add money - allow manager to add money to user account.
 * Purchase item - purchasing an item removes money from their account, making sure the balance is there, and executes whatever machine.
-* Refund balance - returns the user's money from their account based on what's in in the machine.
+* Refund balance - returns the user's money from their account, through manager. 
 
 **Manager functions**:
 * Manager control - manually update customer information and balances.
