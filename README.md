@@ -120,8 +120,6 @@ The program will be mostly written in Python 3. This makes it easy to use mySQL,
 
 #### mySQL Table Design:
 
-There will be n+3 tables, where n refers to the number of users of the program.
-
 The tables will be laid out as follows:
 
 'parameters' table:
@@ -152,6 +150,17 @@ The tables will be laid out as follows:
 | timestamp | action   | item | amount | prev_bal | cur_bal |
 | --------- | -------- | ---- | ------ | -------- | ------- |
 | *format*  | purchase | soda | 0.50   | 35.75    | 35.25   |
+
+'sales' table:
+
+| timestamp | rfid_key | item | price |
+| --- | --- | --- | ---
+| 1551930836.823067 | 113815 | coffee | 1.00
+
+### Requirements:
+
+* Python 3.7.2 or later
+* The "mysql-connector-python" module
 
 ### Program functions:
 
@@ -186,7 +195,6 @@ The tables will be laid out as follows:
 
 **Manager functions**:
 * Manager control - manually update customer information and balances.
-* Manager notifications: Inform the managers when change is running low.
 
 **Google form functionality**:
 * Update information - updates user information from a Google form.
