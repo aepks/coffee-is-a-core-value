@@ -1,8 +1,5 @@
 import time
-import datetime
-from mysql_connection import *
-
-
+import mysql_connection
 
 class user:
 
@@ -11,34 +8,38 @@ class user:
 
     def __init__(self, rfid_key):
 
-        self.rfid_key = rfid_key
-        self.username = self.gen_user_name()
-        self.email_address = self.username + "@hawk.iit.edu"
-        self.balance = 0.00
-        self.account_type = "user"
-        self.soda_price = None
-        self.coffee_price = None
+        data = mysql_connection.logon(rfid_key)
 
-    def gen_user_name(self):
+        self.rfid_key = data[0]
+        self.user_name = data[1]
+        self.email_address = data[2]
+        self.balance = data[3]
+        self.account_type = data[4]
+        self.active = data[7]
 
-        return f"Test User {self.rfid_key}"
+        self.prices = {"coffee": data[5], "soda": data[6]}
+
+        for k in self.prices:
+            if not self.prices[k]:
+                self.prices[k] = mysql_connection.get_price(k)
+
 
     def purchase(self, item):
 
-        price = 0.5 # Temp function: Call to 'parameters' table to check out what the price should be.
-        minbal = 0.00 # Call to 'parameters' table to see what 'minbal' should be.
-        if (self.balance - price) < minbal:
-            return False
+        if self.active:
+            mysql_connection.log_sale(time.time(), self.rfid_key, item, self.prices[item])
+            data = mysql_connection.logon(self.rfid_key)
+            self.balance = data[3]
+            return True
         else:
-            prev_bal = self.balance
-            self.balance -= price
+            return False
 
-            # Call to 'users' table to update their balance.
-
-            receipt = (self._timestamp(), 'purchase', item, price, prev_bal, self.balance)
-
-            # Call to 'user' table that logs this data.
-
-    def refund(self):
-
-        machine_bills = [] # sql statement
+    def __repr__(self):
+        outstring = f"""\nrfid_key: {self.rfid_key}
+        \nuser_name: {self.user_name}
+        \nemail_address: {self.email_address}
+        \nbalance: {self.balance}
+        \naccount_type: {self.account_type}
+        \nactive: {bool(self.active)}
+        \nprices: {self.prices}"""
+        return outstring

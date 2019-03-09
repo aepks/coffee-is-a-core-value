@@ -32,7 +32,6 @@ Justin Schmitz, Daniel Keats (Jimmy)
   1. "user": Able to access all standard functionality.
   2. "manager": Able to modify account balances, adjust prices, and produce data exports.
   3. "admin": Full access, including updating the program, access to the databases, and doing basically whatever they want.   
-  4. "guest": Limited access. Default state, without scanning an ID. Allows the user to input money and purchase drinks, but after 30 minutes since the last activity, the balance will be set to zero.
 
 ## Workflow:
 
@@ -44,7 +43,7 @@ Task 1: New Registration.
 
   1. If information is not display a message on the screen with the following: "Unable to find your hawk information. To register your account under your name, follow this link: [google form]. Once you fill out the form, your information will update automatically. Please press OK to continue."
 
-4. Display current balance, probably 0.00, along with their user name or RFID key. Prompt the user to input money.
+4. Display current balance.
 
 Task 2: Purchasing a coffee.
 
@@ -71,19 +70,18 @@ Task 4. Generating a receipt.
 2. Depending on machine, user will be welcomed with 'Welcome' state.
 3. User will then press the 'receipt' button.
 4. If on guest account: User will be told they are on guest account, and return to main menu.
-5. If unregistered, unknown RFID key account: User will be prompted to register their account.
 6. If on registered account:
 
   1. Receipt will be generated, and sent to their email.
   2. Display "Sent a receipt to [email]. To change this address, please fill out [google form]".
 
-Task 5. Adding money to an account.
+Task 5. Payment Systems:
 
-1. A locked box with a slot will be next to the machine, along with envelopes.
-2. The user will write their name on the envelope, and include money.
-3. A manager will add it to their account.
+1. All users will accrue balance over a two week long period.
+2. At the end of the two week period, users will be emailed invoices to their hawk emails.
+3. The users will have one week to pay this.
+4. If the user does not pay by the end of the week, their account will be deactivated.
 
-As a stretch goal, automating task 5 using the money input on the soda machine.
 
 Managerial tasks:
 1. Informing the system managers and administrators when change is running low.
@@ -128,7 +126,6 @@ The tables will be laid out as follows:
 | ------ | ----- |
 | coffee | 1.00  |
 | soda   | 0.50  |
-| min_bal | 0.00  |
 
 'machine_information' table:
 
@@ -138,18 +135,18 @@ The tables will be laid out as follows:
 
 'users' table:
 
-| rfid_key | user_name | email_address | balance | account_type | soda_price | coffee_price |
-| -------- | --------- | ------------- | ------- | ------------ | ---------- | ------------ |
-| 113815   | jschmitz2 | i@gmail.com   | 35.25   | admin        | 0.50       | 0.50         |
-| 116381   | jschmoe38 | like@ymail.co | 23.25   | manager      | 0.50       | 0.50         |
-| 114189   | kschmitz2 | coffee@me.com | 05.30   | user         | None       | None         |
+| rfid_key | user_name | email_address | balance | account_type | soda_price | coffee_price | active |
+| -------- | --------- | ------------- | ------- | ------------ | ---------- | ------------ | ------ |
+| 113815   | jschmitz2 | i@gmail.com   | 35.25   | admin        | 0.50       | 0.50         | 1      |
+| 116381   | jschmoe38 | like@ymail.co | 23.25   | manager      | 0.50       | 0.50         | 1      |
+| 114189   | kschmitz2 | coffee@me.com | 05.30   | user         | None       | None         | 0      |
 
-'user' table (for each individual user):
+'user' table (for each individual user): (rfid_id_11321)
 *note: this table will be named after their user ID*
 
-| timestamp | action   | item | amount | prev_bal | cur_bal |
-| --------- | -------- | ---- | ------ | -------- | ------- |
-| *format*  | purchase | soda | 0.50   | 35.75    | 35.25   |
+| timestamp | action   | item | amount | cur_bal |
+| --------- | -------- | ---- | ------ | ------- |
+| *format*  | purchase | soda | 0.50   | 35.25   |
 
 'sales' table:
 
@@ -168,8 +165,8 @@ The tables will be laid out as follows:
 * Check the user's ID card against the database, and see if it is present.
 * If it is present, set the active account to that user.
 * If it is not present, generate a new account for that user, then set the active account to that user.
-* Add money - allow user to add money, add it to their account.
 * Purchase item - purchasing an item removes money from their account, making sure the balance is there, and executes whatever machine.
+* Send invoice to email on file.
 * Refund balance - returns the user's money from their account.
 * Generate receipt - generates a receipt for the user, and sends it to the email on file.
 * Update information - updates user information from a Google form.
@@ -189,7 +186,7 @@ The tables will be laid out as follows:
 
 **Account-balance functions**:
 
-* Add money - allow manager to add money to user account.
+* Send invoice to email on file.
 * Purchase item - purchasing an item removes money from their account, making sure the balance is there, and executes whatever machine.
 * Refund balance - returns the user's money from their account, through manager.
 
