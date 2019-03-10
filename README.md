@@ -4,6 +4,7 @@
 
 Justin Schmitz, Daniel Keats (Jimmy)
 
+https://otsi.iit.edu/dropoff/ link for grabbing account names from rfid keys
 ### Main Objectives:
 
 1. Provide an easy and efficient method for regulating account balances using student's Hawkcards, or any other 125 kHZ RFID card if they are not a student. This includes:
