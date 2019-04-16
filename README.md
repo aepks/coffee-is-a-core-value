@@ -83,11 +83,19 @@ Task 5. Payment Systems:
 3. The users will have one week to pay this.
 4. If the user does not pay by the end of the week, their account will be deactivated.
 
+Task 6. Refund:
+
+1. User will press the 'refund' button on the machine.
+2. Program will undo the previous transaction for the logged in user.
+3. Program will send the user an email, and ask them to explain briefly why they want a refund.
+4. Request will be approved/denied by manager.
+
 
 Managerial tasks:
 1. Informing the system managers and administrators when change is running low.
 2. Informing the system managers and administrators after a certain number of coffee or soda purchases.
 3. Allowing manual overriding of balances, in case something trips up along the line.
+4. Approve/deny refund requests.
 
 
 
