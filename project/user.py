@@ -23,11 +23,10 @@ class user:
             if not self.prices[k]:
                 self.prices[k] = mysql_connection.get_price(k)
 
-
     def purchase(self, item):
 
         if self.active:
-            mysql_connection.log_sale(time.time(), self.rfid_key, item, self.prices[item])
+            mysql_connection.log_sale(round(time.time()), self.rfid_key, item, self.prices[item])
             data = mysql_connection.logon(self.rfid_key)
             self.balance = data[3]
             return True
