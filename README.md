@@ -124,44 +124,45 @@ Raspberry Pi models will be used for the parts of the machine. The responsibilit
 
 The program will be mostly written in Python 3. This makes it easy to use mySQL, as well as connecting to physical buttons using GPIO.
 
-
 #### mySQL Table Design:
+
+![ERD of tables](https://i.imgur.com/vtV5Sy5.png)
 
 The tables will be laid out as follows:
 
-'parameters' table:
+'items' table:
 
-| item   | price |
-| ------ | ----- |
-| coffee | 1.00  |
-| soda   | 0.50  |
+| ID | name   | price |
+| -- | ------ | ----- |
+| 1  | coffee | 1.00  |
+| 2  | soda   | 0.50  |
 
-'machine_information' table:
 
-| timestamp | balance | soda_sold | coffee_sold |
-| --------- | ------- | --------- | ----------- |
-| *format*  | 69.40   | 31        | 52          |
+'roles' table: human-readable list of roles.
 
-'users' table:
+| ID | name    |
+| -- | ------- |
+| 1  | user    |
+| 2  | manager |
+| 3  | admin   |
 
-| rfid_key | user_name | email_address | balance | account_type | soda_price | coffee_price | active |
-| -------- | --------- | ------------- | ------- | ------------ | ---------- | ------------ | ------ |
-| 113815   | jschmitz2 | i@gmail.com   | 35.25   | admin        | 0.50       | 0.50         | 1      |
-| 116381   | jschmoe38 | like@ymail.co | 23.25   | manager      | 0.50       | 0.50         | 1      |
-| 114189   | kschmitz2 | coffee@me.com | 05.30   | user         | None       | None         | 0      |
 
-'user' table (for each individual user): (rfid_id_11321)
-*note: this table will be named after their user ID*
+'users' table: identifies users by their RFID card.  If a user replaces their ID card, they can ask a manager to update it with (essentially) 
+`UPDATE Users SET rfid_key = <new_key> WHERE rfid_key = <old_id>`
 
-| timestamp | action   | item | amount | cur_bal |
-| --------- | -------- | ---- | ------ | ------- |
-| *format*  | purchase | soda | 0.50   | 35.25   |
+| rfid_key | user_name | email_address | disabled | role_id |
+| -------- | --------- | ------------- | -------- | ------- |
+| 113815   | jschmitz2 | i@gmail.com   | false    | 3       |
+| 116381   | jschmoe38 | like@ymail.co | false    | 2       |
+| 114189   | kschmitz2 | coffee@me.com | false    | 1       |
 
-'sales' table:
+'transactions' table: tracks all changes to user balance.  'Amount' is recorded because item prices can change over time and because users can "top up" their accounts or pay their bills (this is why item_id is optional).
 
-| timestamp | rfid_key | item | price |
-| --- | --- | --- | ---
-| 1551930836.823067 | 113815 | coffee | 1.00
+| ID | timestamp  | amount | user_rfid_key | item_id |
+| -- | ---------  | ------ | ------------- | ------- |
+| 1  | 1551930836 | -0.50  | 113815        | 1       |
+| 2  | 1557972592 | 20.00  | 114189        | NULL    |
+
 
 ### Requirements:
 
