@@ -199,10 +199,177 @@ class Address(Base):
 User.addresses = relationship( # Uses foreign key relationships to determine that Address.user will be many to one.
     "Address", order_by=Address.id, back_populates="User")
 
-# Basic overview of relationship types:
+##########################################
+# Relationship Types
+##########################################
 
 # One to many:
+
 # Places foreign key restriction on child table referencing the parent.
 # Relationship() is then specified on the parent, referencing a collection of child items.
 
-# Establishing this as a bidirectional relationsihp,
+class Parent(Base):
+    __tablename__ = 'parent'
+    id = Column(Integer, primary_key=True)
+    children = relationship('Child')
+
+
+class Child(Base):
+    __tablename__ = 'child'
+    id = Column(Integer, primary_key=True)
+    parent_id = Column(Integer, ForeignKey('parent.id'))
+
+# Establishing this as a bidirectional relationship:
+
+class Parent(Base):
+    __tablename__ = 'parent'
+    id = Column(Integer, primary_key=True)
+    children = relationship("Child", back_populates="parent")
+
+class Child(Base):
+    __tablename__ = 'child'
+    id = Column(Integer, primary_key=True)
+    parent_id = Column(Integer, ForeignKey('parent.id'))
+    parent = relationship("Parent", back_populates="children")
+
+# Many to One:
+
+# Places foreign key parameter in parent table referencing child.
+# relationship() is then declared on the parent, where a new scalar-holding attribute
+# will be created.
+
+class Parent(Base):
+    __tablename__ = 'parent'
+    id = Column(Integer, primary_key=True)
+    child_id = Column(Integer, ForeignKey('child.id'))
+    child = relationship('Child')
+
+class Child(Base):
+    __tablename__ = 'child'
+    id = Column(Integer, primary_key=True)
+
+# One to One:
+
+# Similar to many-to-one or one-to-many relationships, but changing the uselist flag
+# to false, indicating that only one value can be supplied.
+
+
+# Converting one-to-many into one-to-one:
+
+class Parent(Base):
+    __tablename__ = 'parent'
+    id = Column(Integer, primary_key=True)
+    child = relationship("Child", uselist=False, back_populates='parent')
+
+class Child(Base):
+    __tablename__ = 'child'
+    id = Column(Integer, primary_key=True)
+    parent_id = Column(integer, ForeignKey('parent.id'))
+    parent = relationship("Parent", back_populates="child")
+
+# Converting many-to-one into one-to-one:
+
+class Parent(Base):
+    __tablename__ = 'parent'
+    id = Column(Integer, primary_key=True)
+    child_id = Column(Integer, primary_key=True)
+    child = relationship("Child", back_populates="parent")
+
+class Child(Base):
+    __tablename__ = 'child'
+    id = Column(Integer, primary_key=True)
+    parent = relationship("Parent", back_populates="child", uselist=False)
+
+
+##########################################
+# Working with related objects
+##########################################
+
+# Limitations of ForeignKey:
+
+# Can only link to a primary key OR unique column
+# Automatically update tehmselves - CASCADE referential action
+# FOREIGN KEY can refer to its own table - self referential foreign key
+
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+
+class Address(Base):
+    __tablename__ = 'addresses'
+    id = Column(Integer, primary_key=True)
+    email_address = Column(String, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id')) # Set user ID as limited to
+                                                      # those values in users.id
+    user = relationship("User", back_populates="addresses")
+
+User.addresses = relationship(
+    "Address", order_by=Address.id, back_populates="user")
+
+
+jack = User(name='jack', fullname='jack dog', nickname = 'gjffdd')
+jack.addresses
+    > []
+
+jack.addresses = [
+    Address(email_address = 'jack@google.com'),
+    Address(email_address = 'j25@yahoo.co.uk')]
+
+# Since this is a bidirectional relationship, we can go the other way:
+
+jack.addreses[1]
+> Address(email_address='j25@yahoo.co.uk')
+
+jack.addresses[1].user
+> User(name='jack', fullname='Jack Bean', nickname='gjffdd')
+
+# Adding and committing this -
+# Through process known as 'cascading', Jack and the Address objects
+# will be committed to the DB together.
+
+session.add(jack)
+session.commit()
+
+# When we just view jack, we won't see the addresses as part of him.
+# This is known as a 'lazy loading' relationship.
+# The attribute still exists, but is not automatically loaded.
+
+##########################################
+# Joins
+##########################################
+
+# Ignoring joins for now, since I don't think I'll need them. Reference documentaton.
+
+##########################################
+# Eager Loading
+##########################################
+
+# All three methods of eager loading in sqlalchemy use the Query.options() method.
+
+# Selectin Load:
+
+# Indicating that User.addresses should load eagarly
+
+# A good choice - orm.selectinload() option, which emits second SELECt
+# statement that fully loads collections assosiated with results loaded.
+
+from sqlalchemy.orm import selectinload
+jack = session.query(User).options(selectinload(User.addresses)).filter_by(name='jack').one()
+
+jack
+> <User(name='jack', fullname='Jack Bean', nickname='gjffdd')>
+
+jack.addresses
+> [<Address(email_address='jack@google.com')>, <Address(email_address='j25@yahoo.com')>]
+
+# Joined Load:
+
+# This style of loading emits a join (by default, LEFT OUTER JOIN)
+
+from sqlalchemy.orm import joinedload
+
+jack = session.query(User).options(joinedload(User.addresses)).filter_by(name='jack'.one())
+
+# Same result.
+
+# Selectinload tends to be more appropriate for loading related collections,
+# whereas joinedload is better for many-to-one relationships.
