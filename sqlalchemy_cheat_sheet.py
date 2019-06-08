@@ -253,7 +253,6 @@ class Child(Base):
 # Similar to many-to-one or one-to-many relationships, but changing the uselist flag
 # to false, indicating that only one value can be supplied.
 
-
 # Converting one-to-many into one-to-one:
 
 class Parent(Base):
