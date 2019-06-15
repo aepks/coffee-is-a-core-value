@@ -1,6 +1,7 @@
 # Project Design
 #### Local account and balance system for the coffee and soda machines at AEPKS
 
+https://tutorials-raspberrypi.com/how-to-use-raspberry-pi-fingerprint-sensor-authentication/ - fingerprint auth.
 
 Justin Schmitz, Daniel Keats (Jimmy)
 
@@ -147,7 +148,7 @@ The tables will be laid out as follows:
 | 3  | admin   |
 
 
-'users' table: identifies users by their RFID card.  If a user replaces their ID card, they can ask a manager to update it with (essentially) 
+'users' table: identifies users by their RFID card.  If a user replaces their ID card, they can ask a manager to update it with (essentially)
 `UPDATE Users SET rfid_key = <new_key> WHERE rfid_key = <old_id>`
 
 | rfid_key | user_name | email_address | disabled | role_id |
