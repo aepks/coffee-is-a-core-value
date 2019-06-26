@@ -3,7 +3,7 @@
 
 https://tutorials-raspberrypi.com/how-to-use-raspberry-pi-fingerprint-sensor-authentication/ - fingerprint auth.
 
-Justin Schmitz, Daniel Keats (Jimmy)
+Justin Schmitz,
 
 https://otsi.iit.edu/dropoff/ link for grabbing account names from rfid keys
 ### Main Objectives:
@@ -41,15 +41,12 @@ Task 1: New Registration.
 
 1. Person scans ID.
 2. System generates a new account for this person.
-3. System finds their hawk name, if available.   
-
-  1. If information is not display a message on the screen with the following: "Unable to find your hawk information. To register your account under your name, follow this link: [google form]. Once you fill out the form, your information will update automatically. Please press OK to continue."
-
+3. System finds their hawk name.
 4. Display current balance.
 
 Task 2: Purchasing a coffee.
 
-1. Person scans ID, or is on guest account.
+1. Person scans ID.
 2. The main menu will appear. Prompt the user with their current balance, and the available menu options. "Welcome, [username]. Your current balance is []."
 3. The user will then press the 'purchase item' button on the coffee machine terminal.
 1. The user's account will be checked, to ensure they have the requisite balance.
@@ -83,14 +80,6 @@ Task 5. Payment Systems:
 2. At the end of the two week period, users will be emailed invoices to their hawk emails.
 3. The users will have one week to pay this.
 4. If the user does not pay by the end of the week, their account will be deactivated.
-
-Task 6. Refund:
-
-1. User will press the 'refund' button on the machine.
-2. Program will undo the previous transaction for the logged in user.
-3. Program will send the user an email, and ask them to explain briefly why they want a refund.
-4. Request will be approved/denied by manager.
-
 
 Managerial tasks:
 1. Informing the system managers and administrators when change is running low.
