@@ -1,4 +1,4 @@
-#How to install and run this project
+# How to install and run this project
 
 This is written to run on a Raspberry Pi, so some instructions may be incorrect if you're on Windows.
 
