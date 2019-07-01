@@ -1,52 +1,40 @@
 from database import *
-
-print("""
-Valid commands:
-'purchase' - purchases a coffee
-'purchase soda' - purchases a soda, but that's pretty second-fiddle.
-'refund' - Processes a refund for the user.
-'logout' - Logs out of the current account.
-'print sales' - Prints full sales data.
-'print parameters' - Prints parameters table.
-'print machine information' - Prints machine information.
-'print users' - Prints the 'users' data.
-'print user' - Prints the active user's data.
-""")
+from gpio_interface import *
+import time
+import datetime
 
 while True:
+    current_datetime = datetime.now()
+    if current_datetime.hours == 23:
+        invoice_users()
+        last_invoice = datetime.now()
 
-    # if usr_input == 'logout':
-    #     print("Please enter your RFID key.")
-    print("Please enter your RFID key.")
-    active_user = return_user(int(input("> ")))
-    # user_balance(active_user)
+    display(f"Press Any Button\nTo Begin   {current_datetime.hours}:{current_datetime.minutes}")
+    if button_press():
+        display("Scan your card\n or fingerprint")
+        # somehow both scan for fingerprint and rfid card
+        user = rfid_return_user(113815) # jschmitz2 for purpose of testing
 
-    # if usr_input == 'purchase':
-    #     active_user.purchase("coffee")
-    #
-    # elif usr_input == 'purchase soda':
-    #     active_user.purchase("soda")
-    #
-    # elif usr_input == 'refund':
-    #     # Do some shit, I don't know
-    #     pass
-    #
-    # elif usr_input == 'print sales':
-    #     for row in mysql_connection.return_sales_data():
-    #         print(row)
-    #
-    # elif usr_input == 'print parameters':
-    #     for row in mysql_connection.return_parameters():
-    #         print(row)
-    #
-    # elif usr_input == 'print machine information':
-    #     for row in mysql_connection.return_machine_information():
-    #         print(row)
-    #
-    # elif usr_input == 'print users':
-    #     for row in mysql_connection.return_users():
-    #         print(row)
-    #
-    # elif usr_input == 'print user':
-    #     for row in mysql_connection.return_user(active_user.rfid_key):
-    #         print(row)
+    display("Welcome. \nCoffee|Cup|Done")
+    activate_led()
+    startime = time.time()
+    while user:
+        button = button_press()
+        if button:
+            if button = 0:
+                user.purchase("coffee")
+                activate_led(b1)
+                display(f"Coffee purchased\nBalance: {user.balance()}")
+            elif button 1:
+                user.purchase("cup")
+                activate_led(b2)
+                display(f"Cup purchased\nBalance: {user.balance()}")
+            else:
+                user = None
+                display("Logging out.")
+                activate_led(b3)
+
+        if time.time() - starttime > 15:
+            display("Logging out\nfrom inactivity")
+            user = None
+            flash_led()
