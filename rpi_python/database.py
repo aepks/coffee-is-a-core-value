@@ -376,7 +376,7 @@ class Transaction(Base):
     amount: Float
         Amount the transaction is for.
     user
-        Back referential relationship for the User's one to many relationship. 
+        Back referential relationship for the User's one to many relationship.
     """
     __tablename__ = 'transactions'
     id = Column(Integer, primary_key=True)
@@ -389,6 +389,21 @@ class Transaction(Base):
 
 
 def add_item(item, price):
+    """Adds a new item to all roles.
+
+    Parameters
+    ----------
+
+    item: str
+        The new item's name.
+    price: float
+        The new item's default price.
+
+    Returns
+    -------
+
+    [None]"""
+
     for role in session.query(Role):
         role.add_item(item, price)
 
@@ -396,7 +411,7 @@ def fingerprint_return_user(fingerprint):
     for user in session.query(User).filter_by(fingerprint=fingerprint):
         return user
 
-def rfid_return_user(rfid_key):
+def rfid_return_user(rfid_key): ## TODO: SPLIT UP INTO MULTIPLE FUNCTIONS 
 
     for user in session.query(User).filter_by(rfid_key=rfid_key):
         return user
