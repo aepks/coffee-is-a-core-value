@@ -15,9 +15,68 @@ session = Session()
 
 
 class User(Base):
+    """User Class for the Coffee Machine Account System
+
+    ...
+    Attributes
+    ----------
+    __tablename__ : str
+        sql table name for sqlalchemy
+    id: int
+        primary table key. Autoincremented.
+    username: str
+        user's hawkcard username (jschmitz2, etc)
+    email: str
+        user's email.
+    disabled: boolean
+        boolean to determine whether user account should be locked or not.
+    fingerprint: int
+        fingerprints are slotted into integer positions by the r305
+    transactions: [Transaction] (one to many)
+        relationship to transactions, can be accessed as a list
+    role: Role (one to one)
+        relationship to roles, object is returned
+    messages: [Message] (one to many)
+        all email messages sent to user are stored, can be accessed as a list
+    rfid_key: [RFID_key] (one to many)
+        list of user's RFID keys - possible that if somebody gets a new card,
+        they'd have a new RFID key and want to keep the same account.
+
+    Methods
+    -------
+    last_transaction()
+        Returns datetime. Last transaction time.
+
+    last_message(type)
+        Returns datetime. Takes in a string referring to message type.
+        Returns the last time a particular type of message was sent
+        to the user.
+
+    balance()
+        Returns float. Returns a user's current balance.
+
+    price(item)
+        Returns float. Returns an item's price for a user.
+
+    active_test()
+        Returns boolean. Returns false if a user has not paid in full within
+        the last two weeks.
+
+    invoice()
+        Returns none. Sends the user an email with their current balance,
+        as well as their transation history for the last two weeks.
+
+    full_history()
+        Returns none. Sends the user an email with their complete history.
+
+    purchase(item)
+        Returns none. Adds a transaction to the user's transactions. Sends
+        the user an email thanking them for their transaction.
+
+
+    """
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    rfid_key = Column(Integer, unique=True)
     username = Column(String)
     email = Column(String)
     disabled = Column(Boolean)
@@ -26,26 +85,29 @@ class User(Base):
     transactions = relationship('Transaction', back_populates='user')
     role = relationship("Role", uselist=False, back_populates='user')
     messages = relationship('Message', back_populates='user')
+    rfid_key = relationship('RFID_key', back_populates='user')
 
+    def last_transaction(self):
+        time = None
+        for transation in self.transactions:
+            time = transaction.timestamp()
+        if time == None:
+            return datetime.now()
+        else:
+            return time
     def last_message(self, type):
         time = None
         for message in messages:
             if message.type == type:
                 time = message.timestamp # assuming time always goes up
         if time == None:
-            # No past message sent.
-            # Return date of first transaction.
-            for transation in transactions:
-                time = transaction.timestamp()
+            time = self.last_transaction()
 
         return time
-
     def balance(self):
         return sum([transaction.amount for transaction in self.transactions])
-
-    def price(self, item):
+    def price(self, item): ## TODO: MAKE THIS METHOD NOT EXIST
         return self.role.price(item)
-
     def active_test(self):
         # Takes no argument.
         # Returns false if a user has not paid in full in the past two weeks.
@@ -64,7 +126,6 @@ class User(Base):
             return False
         else:
             return True
-
     def invoice(self):
         last_invoice = last_message("invoice")
         if (datetime.now()-last_invoice).days > 14:
@@ -103,7 +164,6 @@ class User(Base):
 
             SendMessage(self.email, subject, msgHTML, msgPlain)
             self.messages.append(Message(type="invoice",subject=subject, msgHTML=msgHTML, msgPlain=msgPlain))
-
     def full_history(self):
         history = []
 
@@ -139,7 +199,6 @@ class User(Base):
 
         SendMessage(self.email, subject, msgHTML, msgPlain)
         self.messages.append(Message(type="full_history",subject=subject, msgHTML=msgHTML, msgPlain=msgPlain))
-
     def purchase(self, item):
         price = self.price(item)
         print(price)
@@ -159,8 +218,55 @@ class User(Base):
         SendMessage(self.email, subject, msgHTML, msgPlain)
         self.messages.append(Message(type="purchase",subject=subject, msgHTML=msgHTML, msgPlain=msgPlain))
 
+class RFID_key(Base):
+    """RFID_key Class for the Coffee Machine Account System
+
+    ...
+    Attributes
+    ----------
+    __tablename__: str
+        tablename for sqlalchemy
+    id: int
+        sqlalchemy row ID. Autoincremented.
+    rfid_key: int
+        user's rfid key. Unique.
+    user_id: int
+        User's ID from User class.
+    user: relationship
+        Setting up one to many referential relationship between classes.
+
+    """
+    __tablename__ = 'rfid_keys'
+    id = Column(Integer, primary_key=True)
+    rfid_key = Column(Integer, unique=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship('User', back_populates='rfid_key')
 
 class Message(Base):
+    """Message Class for the Coffee Machine Account System
+
+    ...
+    Attributes
+    ----------
+    __tablename__: str
+        tablename for sqlalchemy
+    id: int
+        sqlalchemy row ID. Autoincremented.
+    type: str
+        Type of message.
+    timestamp: datetime
+        Time message sent. Datetime object. Autogenerated.
+    user_id: int
+        User ID that message was sent to.
+    subject: str
+        Subject line of email.
+    msgHTML: str
+        HTML text of email.
+    msgPlain: str
+        Plain text email.
+    user: User
+        Sets up one to many relatonship between classes.
+    """
     __tablename__ = 'messages'
     id = Column(Integer, primary_key=True)
     type = Column(String)
@@ -172,6 +278,35 @@ class Message(Base):
     user = relationship('User', back_populates='messages')
 
 class Role(Base):
+    """Role Class for the Coffee Machine Account System
+
+    ...
+    Attributes
+    ----------
+    __tablename__: str
+        tablename for sqlalchemy
+    id: int
+        sqlalchemy row ID. Autoincremented.
+    user_id: int
+        User's ID who has the role.
+    name: str
+        Name of the role. "Manager", etc.
+    permissions: boolean
+        Whether the role should have full privileges.
+    user: User
+        Reference to User class.
+    items: Item
+        One to many relationship to items class.
+
+    Methods
+    -------
+    price(str)
+        Returns the price of the given item name.
+    add_item(str, float)
+        Adds an item and a price to the role.
+    update_item(str, float)
+        Updates an item's price.
+    """
     __tablename__ = 'role'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -180,9 +315,8 @@ class Role(Base):
     user = relationship('User', back_populates='role')
     items = relationship('Item')
 
-    def price(self, purchase):
+    def price(self, purchase): ## TODO: Make this nicer.
         for item in self.items:
-            print(item.name, purchase)
             if item.name == purchase:
                 return item.price
         else:
@@ -202,6 +336,22 @@ class Role(Base):
                     item.price = price
 
 class Item(Base):
+    """Item Class for the Coffee Machine Account System
+
+    ...
+    Attributes
+    ----------
+    __tablename__: str
+        tablename for sqlalchemy
+    id: int
+        sqlalchemy row ID. Autoincremented.
+    name: str
+        Name of the item.
+    role: Int
+        Back referential relationship to the Role class.
+    price: float
+        Price of the item.
+    """
     __tablename__ = 'items'
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -210,6 +360,24 @@ class Item(Base):
 
 
 class Transaction(Base):
+    """Transaction Class for the Coffee Machine Account System
+
+    ...
+    Attributes
+    ----------
+    __tablename__: str
+        sqlalchemy table name
+    id: int
+        sqlalchemy row ID. Autoincremented.
+    user_id: int
+        User ID that made the transaction.
+    timestamp: DateTime
+        DateTime object. Autogenerated.
+    amount: Float
+        Amount the transaction is for.
+    user
+        Back referential relationship for the User's one to many relationship. 
+    """
     __tablename__ = 'transactions'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
