@@ -1,11 +1,14 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float, asc, desc
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float, desc
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.sql import func
 from datetime import datetime
 from mail import SendMessage
+from gpio_interface import display
 import random
+
+# testing purposes
 
 # engine = create_engine('postgresql+psycopg2://aepks:aepks@localhost/aepks')
 engine = create_engine('sqlite://')
@@ -89,25 +92,28 @@ class User(Base):
 
     def last_transaction(self):
         time = None
-        for transation in self.transactions:
+        for transaction in self.transactions:
             time = transaction.timestamp()
-        if time == None:
+        if time is None:
             return datetime.now()
         else:
             return time
+
     def last_message(self, type):
         time = None
-        for message in messages:
+        for message in self.messages:
             if message.type == type:
-                time = message.timestamp # assuming time always goes up
-        if time == None:
+                time = message.timestamp  # assuming time always goes up
+        if time is None:
             time = self.last_transaction()
-
         return time
+
     def balance(self):
         return sum([transaction.amount for transaction in self.transactions])
-    def price(self, item): ## TODO: MAKE THIS METHOD NOT EXIST
+
+    def price(self, item):  # TODO: MAKE THIS METHOD NOT EXIST
         return self.role.price(item)
+
     def active_test(self):
         # Takes no argument.
         # Returns false if a user has not paid in full in the past two weeks.
@@ -126,12 +132,13 @@ class User(Base):
             return False
         else:
             return True
+
     def invoice(self):
-        last_invoice = last_message("invoice")
+        last_invoice = self.last_message("invoice")
         if (datetime.now()-last_invoice).days > 14:
             history = []
             for transaction in self.transactions:
-                if (datetime.now() - transation.timestamp).days < 14:
+                if (datetime.now() - transaction.timestamp).days < 14:
                     if transaction.amount < 0:
                         type = 'Purchase'
                     else:
@@ -152,7 +159,7 @@ class User(Base):
 
             subject = f"""Your Coffee Machine Invoice as of {d.month} - {d.day}"""
             msgPlain = "\n  - ".join(history)
-            msgHTML += (f"<h1> Your current balance is {self.balance()}.</h1>")
+            msgHTML = (f"<h1> Your current balance is {self.balance()}.</h1>")
             msgHTML += ("<h2> See your transaction history listed below for the past two weeks.</h2>")
             msgHTML += "<ul>"
             msgHTML = msgHTML + "\n".join(history)
@@ -163,16 +170,20 @@ class User(Base):
             )
 
             SendMessage(self.email, subject, msgHTML, msgPlain)
-            self.messages.append(Message(type="invoice",subject=subject, msgHTML=msgHTML, msgPlain=msgPlain))
+            self.messages.append(Message(
+                type="invoice",
+                subject=subject,
+                msgHTML=msgHTML,
+                msgPlain=msgPlain)
+            )
+
     def full_history(self):
         history = []
-
         for transaction in self.transactions:
             if transaction.amount < 0:
                 type = 'Purchase'
             else:
                 type = 'Credit'
-
             history.append(
                 '<li>'
                 f'{transaction.timestamp.month}/'
@@ -187,7 +198,6 @@ class User(Base):
         d = datetime.today()
         subject = f"""Your Coffee Machine History as of {d.month} - {d.day}"""
         msgPlain = "\n  - ".join(history)
-
         msgHTML = ("<h2> See your transaction history listed below.</h2>")
         msgHTML += "<ul>"
         msgHTML = msgHTML + "\n".join(history)
@@ -198,7 +208,13 @@ class User(Base):
         )
 
         SendMessage(self.email, subject, msgHTML, msgPlain)
-        self.messages.append(Message(type="full_history",subject=subject, msgHTML=msgHTML, msgPlain=msgPlain))
+        self.messages.append(Message(
+            type="full_history",
+            subject=subject,
+            msgHTML=msgHTML,
+            msgPlain=msgPlain)
+        )
+
     def purchase(self, item):
         price = self.price(item)
         print(price)
@@ -216,7 +232,13 @@ class User(Base):
         )
 
         SendMessage(self.email, subject, msgHTML, msgPlain)
-        self.messages.append(Message(type="purchase",subject=subject, msgHTML=msgHTML, msgPlain=msgPlain))
+        self.messages.append(Message(
+            type="purchase",
+            subject=subject,
+            msgHTML=msgHTML,
+            msgPlain=msgPlain)
+        )
+
 
 class RFID_key(Base):
     """RFID_key Class for the Coffee Machine Account System
@@ -241,6 +263,7 @@ class RFID_key(Base):
     rfid_key = Column(Integer, unique=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', back_populates='rfid_key')
+
 
 class Message(Base):
     """Message Class for the Coffee Machine Account System
@@ -276,6 +299,7 @@ class Message(Base):
     msgHTML = Column(String)
     msgPlain = Column(String)
     user = relationship('User', back_populates='messages')
+
 
 class Role(Base):
     """Role Class for the Coffee Machine Account System
@@ -315,7 +339,7 @@ class Role(Base):
     user = relationship('User', back_populates='role')
     items = relationship('Item')
 
-    def price(self, purchase): ## TODO: Make this nicer.
+    def price(self, purchase):  # TODO: Make this nicer.
         for item in self.items:
             if item.name == purchase:
                 return item.price
@@ -326,7 +350,6 @@ class Role(Base):
         self.items.append(Item(name=item, price=price))
 
     def update_item(self, item, price):
-
         if item == "*":
             for item in self.prices:
                 item.price = price
@@ -334,6 +357,7 @@ class Role(Base):
             for item in self.prices:
                 if item.name == item:
                     item.price = price
+
 
 class Item(Base):
     """Item Class for the Coffee Machine Account System
@@ -407,18 +431,22 @@ def add_item(item, price):
     for role in session.query(Role):
         role.add_item(item, price)
 
+
 def fingerprint_return_user(fingerprint):
     for user in session.query(User).filter_by(fingerprint=fingerprint):
         return user
 
-def rfid_return_user(rfid_key): ## TODO: SPLIT UP INTO MULTIPLE FUNCTIONS 
+
+def rfid_return_user(rfid_key):
 
     for user in session.query(User).filter_by(rfid_key=rfid_key):
         return user
-    # else:
+
+
+def create_user(rfid_key):
     display("Please scan your\n fingerprint.")
     # fingerprint input, assign to slot
-    fingerprint = Int()
+    fingerprint = int()
     # Fingerprint failover:
     if fingerprint_slots_used() > 250:
         inactive_user = most_inactive_user()
@@ -427,23 +455,33 @@ def rfid_return_user(rfid_key): ## TODO: SPLIT UP INTO MULTIPLE FUNCTIONS
 
     # Clear that fingerprint slot.
 
-    new_user = User(rfid_key=rfid_key, username=None, email=None, disabled=0, fingerprint=fingerprint)
+    new_user = User(
+        rfid_key=rfid_key,
+        username=None,
+        email=None,
+        disabled=0,
+        fingerprint=fingerprint
+    )
+
     for _ in range(30):
         new_user.transactions.append(random.randrange(-5, 5))
+
     session.add(new_user)
     session.commit()
     return new_user
+
 
 def flag_delinquent():  # figure out a better way to integrate this
     for user in session.query(User):
         user.active = user.active_test()
 
+
 def fingerprint_slots_used():
     for user in session.query(User).order_by(desc(User.fingerprint)).limit(1):
         return user.fingerprint
 
-def most_inactive_user():
 
+def most_inactive_user():
     oldest_user = None
     oldest_timestamp = datetime.today()
     for user in session.query(User):
@@ -456,6 +494,7 @@ def most_inactive_user():
 
     return oldest_user
 
+
 def invoice_users():
     for user in session.query(User):
         user.invoice()
@@ -464,7 +503,7 @@ def invoice_users():
 Base.metadata.create_all(engine)
 
 
-test_user = User(rfid_key=113815,disabled=False)
+test_user = User(rfid_key=113815, disabled=False)
 test_user.username="jschmitz2"
 test_user.email="jschmtiz2@hawk.iit.edu"
 test_user.disabled=True
