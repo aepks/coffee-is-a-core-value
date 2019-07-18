@@ -10,8 +10,8 @@ import random
 
 # testing purposes
 
-# engine = create_engine('postgresql+psycopg2://aepks:aepks@localhost/aepks')
-engine = create_engine('sqlite://')
+engine = create_engine('postgresql+psycopg2://aepks:aepks@localhost/aepks')
+# engine = create_engine('sqlite://')
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -111,6 +111,28 @@ class User(Base):
     def balance(self):
         return sum([transaction.amount for transaction in self.transactions])
 
+    def add_balance(self, amount):
+        self.transactions.append(Transaction(amount=amount))
+
+        subject = "Balance added to your AEPKS Coffee Account"
+        msgPlain = f"{amount} has been added to your AEPKS coffee account!"
+        msgHTML = f"<h1>${amount} has been added to your account!</h1>"
+        msgHTML += (
+            f"<p>${amount} has been added to your account! Your balance is "
+            f"{self.balance()}<br><br> <em>If you're recieving"
+            f"this message, but didn't put money in, reply to this "
+            f"email <strong>as soon as possible</strong>."
+        )
+
+        SendMessage(self.email, subject, msgHTML, msgPlain)
+        self.messages.append(Message(
+            type="purchase",
+            subject=subject,
+            msgHTML=msgHTML,
+            msgPlain=msgPlain)
+        )
+
+
     def price(self, item):  # TODO: MAKE THIS METHOD NOT EXIST
         return self.role.price(item)
 
@@ -177,7 +199,7 @@ class User(Base):
                 msgPlain=msgPlain)
             )
 
-    def full_history(self):
+    def full_history(self, email=True):
         history = []
         for transaction in self.transactions:
             if transaction.amount < 0:
@@ -207,17 +229,19 @@ class User(Base):
             " reply to this email.</em></p>"
         )
 
-        SendMessage(self.email, subject, msgHTML, msgPlain)
-        self.messages.append(Message(
-            type="full_history",
-            subject=subject,
-            msgHTML=msgHTML,
-            msgPlain=msgPlain)
-        )
+        if email:
+            SendMessage(self.email, subject, msgHTML, msgPlain)
+            self.messages.append(Message(
+                type="full_history",
+                subject=subject,
+                msgHTML=msgHTML,
+                msgPlain=msgPlain)
+            )
+
+        return history
 
     def purchase(self, item):
         price = self.price(item)
-        print(price)
         self.transactions.append(Transaction(amount=(price*-1)))
 
         subject = "Thank you for your coffee purchase!"
