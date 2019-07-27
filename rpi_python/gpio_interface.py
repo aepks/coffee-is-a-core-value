@@ -77,39 +77,60 @@ def flash_led(leds=leds):
         time.sleep(.2)
         deactivate_led(leds)
 
-# Using BOARD numbers.
-# Raspberry Pi 3
 
-# Pin Configuration:
+def main():
+    while True:
+        try:
+            button_pressed = button_press()
+            if button_pressed:
+                flash_led(button_led[button_pressed])
+        except KeyboardInterrupt:
+            break
 
-# Buttons and LEDs:
+    print("Flashing LED 1.")
+    flash_led(l1)
+    print("Flashing LED 2.")
+    flash_led(l2)
+    print("Flashing LED 3.")
+    flash_led(l3)
 
-# B1: Pin 12, GPIO 18
-# L1: Pin 16, GPIO 23
 
-# B2: Pin 18, GPIO 24
-# L2: Pin 22, GPIO 25
+if __name__ == "__main__":
+    main()
 
-# B3: Pin 24, GPIO 8
-# L3: Pin 26, GPIO 7
+    # Using BOARD numbers.
+    # Raspberry Pi 3
 
-# LCD: https://learn.adafruit.com/character-lcds/python-circuitpython
+    # Pin Configuration:
 
-# 1:  GND     - PIN 9
-# 2:  5V      - PIN 2
-# 3:  V0      - PIN NONE - POTENTIOMETER - DO WE REALLY NEED THIS
-# 4:  GPIO 2  - PIN 3
-# 5:  GND     - PIN 25
-# 6:  GPIO 3  - PIN 5
-# 7:  SKIP    - PIN
-# 8:  SKIP    - PIN
-# 9:  SKIP    - PIN
-# 10: SKIP    - PIN
-# 11: GPIO 4  - PIN 7
-# 12: GPIO 17 - PIN 11
-# 13: GPIO 27 - PIN 13
-# 14: GPIO 22 - PIN 15
-# 15: 5V      - PIN 4
-# 16: GND     - PIN 39
+    # Buttons and LEDs:
 
-# Could merge the ground wires together
+    # B1: Pin 12, GPIO 18
+    # L1: Pin 16, GPIO 23
+
+    # B2: Pin 18, GPIO 24
+    # L2: Pin 22, GPIO 25
+
+    # B3: Pin 24, GPIO 8
+    # L3: Pin 26, GPIO 7
+
+    # LCD: https://learn.adafruit.com/character-lcds/python-circuitpython
+
+    # 1:  GND     - PIN 9
+    # 2:  5V      - PIN 2
+    # 3:  V0      - PIN NONE - POTENTIOMETER - DO WE REALLY NEED THIS
+    # 4:  GPIO 2  - PIN 3
+    # 5:  GND     - PIN 25
+    # 6:  GPIO 3  - PIN 5
+    # 7:  SKIP    - PIN
+    # 8:  SKIP    - PIN
+    # 9:  SKIP    - PIN
+    # 10: SKIP    - PIN
+    # 11: GPIO 4  - PIN 7
+    # 12: GPIO 17 - PIN 11
+    # 13: GPIO 27 - PIN 13
+    # 14: GPIO 22 - PIN 15
+    # 15: 5V      - PIN 4
+    # 16: GND     - PIN 39
+
+    # Could merge the ground wires together
