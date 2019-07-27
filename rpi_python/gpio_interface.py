@@ -84,6 +84,7 @@ def main():
             button_pressed = button_press()
             if button_pressed:
                 flash_led(button_led[buttons[button_pressed]])
+                print(button_pressed)
         except KeyboardInterrupt:
             break
 
