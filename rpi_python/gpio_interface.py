@@ -60,7 +60,7 @@ def activate_led(leds=leds):
         for led in leds:
             led.on()
     except Exception:
-        led.on()
+        leds.on()
 
 
 def deactivate_led(leds=leds):
@@ -68,7 +68,7 @@ def deactivate_led(leds=leds):
         for led in leds:
             led.off()
     except Exception:
-        led.off()
+        leds.off()
 
 
 def flash_led(leds=leds):
