@@ -1,52 +1,52 @@
 from gpiozero import LED, Button
-import adafruit_character_lcd.character_lcd as characterlcd
+# import adafruit_character_lcd.character_lcd as characterlcd
 import board
 import time
 import digitalio
 
-
-lcd_columns = 16
-lcd_rows = 2
-
-b1 = Button(18)
-l1 = LED(23)
-b2 = Button(24)
-l2 = LED(25)
-b3 = Button(8)
-l3 = LED(7)
-
-button_led = {b1: l1, b2: l2, b3: l3}
-buttons = [b1, b2, b3]
-leds = [l1, l2, l3]
-
-lcd_rs = digitalio.DigitalInOut(board.D2)  # Pin 4
-lcd_en = digitalio.DigitalInOut(board.D5)  # Pin 6
-lcd_d7 = digitalio.DigitalInOut(board.D22)  # Pin 14
-lcd_d6 = digitalio.DigitalInOut(board.D27)  # Pin 13
-lcd_d5 = digitalio.DigitalInOut(board.D17)  # Pin 12
-lcd_d4 = digitalio.DigitalInOut(board.D4)  # Pin 11
-
-lcd = characterlcd.Character_LCD_Mono(
-    lcd_rs,
-    lcd_en,
-    lcd_d4,
-    lcd_d5,
-    lcd_d6,
-    lcd_d7,
-    lcd_columns,
-    lcd_rows
-)
-
-lcd.backlight = True
-
-
-def display(message):
-    lcd.clear()
-    for line in message.split("\n"):
-        if len(line) > 16:
-            raise KeyError(f"Line too long - {len(line)} characters, 16 max")
-
-    lcd.message = message
+#
+# lcd_columns = 16
+# lcd_rows = 2
+#
+# b1 = Button(18)
+# l1 = LED(23)
+# b2 = Button(24)
+# l2 = LED(25)
+# b3 = Button(8)
+# l3 = LED(7)
+#
+# button_led = {b1: l1, b2: l2, b3: l3}
+# buttons = [b1, b2, b3]
+# leds = [l1, l2, l3]
+#
+# lcd_rs = digitalio.DigitalInOut(board.D2)  # Pin 4
+# lcd_en = digitalio.DigitalInOut(board.D5)  # Pin 6
+# lcd_d7 = digitalio.DigitalInOut(board.D22)  # Pin 14
+# lcd_d6 = digitalio.DigitalInOut(board.D27)  # Pin 13
+# lcd_d5 = digitalio.DigitalInOut(board.D17)  # Pin 12
+# lcd_d4 = digitalio.DigitalInOut(board.D4)  # Pin 11
+#
+# lcd = characterlcd.Character_LCD_Mono(
+#     lcd_rs,
+#     lcd_en,
+#     lcd_d4,
+#     lcd_d5,
+#     lcd_d6,
+#     lcd_d7,
+#     lcd_columns,
+#     lcd_rows
+# )
+#
+# lcd.backlight = True
+#
+#
+# def display(message):
+#     lcd.clear()
+#     for line in message.split("\n"):
+#         if len(line) > 16:
+#             raise KeyError(f"Line too long - {len(line)} characters, 16 max")
+#
+#     lcd.message = message
 
 
 def button_press():  # Does a single check if any of the buttons are pressed.
