@@ -8,17 +8,17 @@ import digitalio
 # lcd_columns = 16
 # lcd_rows = 2
 #
-# b1 = Button(18)
-# l1 = LED(23)
-# b2 = Button(24)
-# l2 = LED(25)
-# b3 = Button(8)
-# l3 = LED(7)
-#
-# button_led = {b1: l1, b2: l2, b3: l3}
-# buttons = [b1, b2, b3]
-# leds = [l1, l2, l3]
-#
+b1 = Button(18)
+l1 = LED(23)
+b2 = Button(24)
+l2 = LED(25)
+b3 = Button(8)
+l3 = LED(7)
+
+button_led = {b1: l1, b2: l2, b3: l3}
+buttons = [b1, b2, b3]
+leds = [l1, l2, l3]
+
 # lcd_rs = digitalio.DigitalInOut(board.D2)  # Pin 4
 # lcd_en = digitalio.DigitalInOut(board.D5)  # Pin 6
 # lcd_d7 = digitalio.DigitalInOut(board.D22)  # Pin 14
