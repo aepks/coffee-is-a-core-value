@@ -8,7 +8,8 @@ import digitalio
 # lcd_columns = 16
 # lcd_rows = 2
 #
-b1 = Button(18)
+
+b1 = Button(14)
 l1 = LED(23)
 b2 = Button(24)
 l2 = LED(25)
@@ -106,7 +107,7 @@ if __name__ == "__main__":
 
     # Buttons and LEDs:
 
-    # B1: Pin 12, GPIO 18
+    # B1: Pin 08, GPIO 14
     # L1: Pin 16, GPIO 23
 
     # B2: Pin 18, GPIO 24
