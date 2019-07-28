@@ -103,7 +103,7 @@ def configure(path='config.ini'):
 
     UUID = config.get('auth', 'uuid')
 
-    print("Initialize %s" %UUID)
+    print(f"Initialize {UUID}")
 
 def sigterm_handler(_signo, _stack_frame):
     """
@@ -111,7 +111,6 @@ def sigterm_handler(_signo, _stack_frame):
     cleanup before exiting.
     kill PID
     """
-    print("[" + get_now() + "] received signal {}, exiting...".format(_signo))
     cleanup()
     sys.exit(0)
 
@@ -135,16 +134,16 @@ if __name__ == "__main__":
     device_name = get_scanner_device()
     device = init(device_name)
 
-    print('Found device: %s' % DEVICE_NAME)
+    print(f'Found device: {DEVICE_NAME}')
 
     while True:
         try:
             rfid = read_input(device)
             make_request(rfid)
-            print('RFID card read, value: %s' %rfid)
+            print(f'RFID card read, value: {rfid}')
         except ValueError:
             time.sleep(0.1)
-        except Exception, e:
+        except Exception as e:
             print(e)
             cleanup(device)
             sys.exit(1)
