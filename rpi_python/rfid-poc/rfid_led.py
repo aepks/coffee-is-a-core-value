@@ -6,7 +6,7 @@ import signal
 import argparse
 import traceback
 import time
-import httplib
+import http.client
 import requests
 import json
 import ConfigParser
